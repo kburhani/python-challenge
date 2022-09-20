@@ -1,33 +1,34 @@
-#Importing the necessary modules/libraries
+# IMPORT OS & CSV
 import os
 import csv
 
-#Creating an object out of the CSV file
+# CSV INTO OBJECT
 budget_data = os.path.join("Resources", "budget_data.csv")
 
-total_months = 0
-total_pl = 0
-value = 0
-change = 0
-dates = []
-profits = []
+# DEFINE VARIABLES
+total_months = 0 #(The total number of months included in the dataset)
+total_pl = 0 #(The net total amount of "Profit/Losses" over the entire period)
+value = 0 #(changes in "Profit/Losses" over the entire period, and then the average of those changes)
+change = 0 #(changes in "Profit/Losses" over the entire period, and then the average of those changes)
+dates = [] #(The greatest increase&decrease in profits (date and amount) over the entire period)
+profits = [] #(The greatest increase&decrease in profits (date and amount) over the entire period)
 
-#Opening and reading the CSV file
-with open(budget_data, newline = "") as csvfile:
+# Open & read CSV file
+with open('Resources/budget_data.csv') as csvfile:
     csvreader = csv.reader(csvfile, delimiter = ",")
 
-    #Reading the header row
+    # READ HEADER
     csv_header = next(csvreader)
 
-    #Reading the first row (so that we track the changes properly)
+    # Read first row
     first_row = next(csvreader)
     total_months += 1
     total_pl += int(first_row[1])
     value = int(first_row[1])
     
-    #Going through each row of data after the header & first row 
+    # Going through each row of data after the header & first row 
     for row in csvreader:
-        # Keeping track of the dates
+        # tracking dates
         dates.append(row[0])
         
         # Calculate the change, then add it to list of changes
@@ -35,27 +36,27 @@ with open(budget_data, newline = "") as csvfile:
         profits.append(change)
         value = int(row[1])
         
-        #Total number of months
+        # Total number of months
         total_months += 1
 
-        #Total net amount of "Profit/Losses over entire period"
+        # Total net amount of "Profit/Losses over entire period"
         total_pl = total_pl + int(row[1])
 
-    #Greatest increase in profits
+    # Greatest increase in profits
     greatest_increase = max(profits)
     greatest_index = profits.index(greatest_increase)
     greatest_date = dates[greatest_index]
 
-    #Greatest decrease (lowest increase) in profits 
+    # Greatest decrease (lowest increase) in profits 
     greatest_decrease = min(profits)
     worst_index = profits.index(greatest_decrease)
     worst_date = dates[worst_index]
 
-    #Average change in "Profit/Losses between months over entire period"
+    # Average change in "Profit/Losses between months over entire period"
     avg_change = sum(profits)/len(profits)
     
 
-#Displaying information
+# PRINT TO TERMINAL
 print("Financial Analysis")
 print("---------------------")
 print(f"Total Months: {str(total_months)}")
@@ -64,14 +65,12 @@ print(f"Average Change: ${str(round(avg_change,2))}")
 print(f"Greatest Increase in Profits: {greatest_date} (${str(greatest_increase)})")
 print(f"Greatest Decrease in Profits: {worst_date} (${str(greatest_decrease)})")
 
-#Exporing to .txt file
-with open("output.txt", "w") as output:
-
-    line1 = "Financial Analysis"
-    line2 = "---------------------"
-    line3 = str(f"Total Months: {str(total_months)}")
-    line4 = str(f"Total: ${str(total_pl)}")
-    line5 = str(f"Average Change: ${str(round(avg_change,2))}")
-    line6 = str(f"Greatest Increase in Profits: {greatest_date} (${str(greatest_increase)})")
-    line7 = str(f"Greatest Decrease in Profits: {worst_date} (${str(greatest_decrease)})")
-    output.write('{}\n{}\n{}\n{}\n{}\n{}\n{}\n'.format(line1,line2,line3,line4,line5,line6,line7))
+# EXPORT TO .TXT
+with open("analysis/output.txt", "w") as f:
+    print("Financial Analysis", file=f)
+    print("---------------------", file=f)
+    print(f"Total Months: {str(total_months)}", file=f)
+    print(f"Total: ${str(total_pl)}", file=f)
+    print(f"Average Change: ${str(round(avg_change,2))}", file=f)
+    print(f"Greatest Increase in Profits: {greatest_date} (${str(greatest_increase)})", file=f)
+    print(f"Greatest Decrease in Profits: {worst_date} (${str(greatest_decrease)})", file=f)
